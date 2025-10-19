@@ -1,50 +1,50 @@
-# Click Counter — HTTP-сервис с поминутной статистикой кликов
+# Click Counter — HTTP service with per-minute click statistics
 
-## 1. Что делает сервис
+## 1. What the service does
 
-Простой сервис, который считает клики по баннерам и возвращает агрегированную статистику по минутам.
+A simple service that counts banner clicks and returns aggregated per-minute statistics.
 
-**Основные эндпоинты:**
-1. `GET /counter/{bannerID}` — засчитывает клик, возвращает `204 No Content`.
-2. `POST /stats/{bannerID}` — возвращает JSON-статистику за диапазон `[from, to)` (в UTC).
+**Main endpoints:**
+1. `GET /counter/{bannerID}` — registers a click, returns `204 No Content`.  
+2. `POST /stats/{bannerID}` — returns JSON statistics for the `[from, to)` range (UTC).
 
 ---
 
-## 2. Переменные окружения
+## 2. Environment variables
 
-| Переменная | По умолчанию | Описание |
-|-------------|---------------|----------|
-| `LISTEN_ADDR` | `:3000` | Адрес HTTP-сервера |
+| Variable | Default | Description |
+|-----------|----------|-------------|
+| `LISTEN_ADDR` | `:3000` | HTTP server address |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
-| `DATABASE_URL` | `postgres://postgres:postgres@db:5432/clicks?sslmode=disable` | Подключение к PostgreSQL |
-| `FLUSH_EVERY` | `1s` | Интервал сброса данных в БД |
-| `SHARDS` | `64` | Количество шардов в памяти |
-| `READ_MAX_RANGE_DAYS` | `90` | Максимальная длина интервала `/stats` |
-| `SHUTDOWN_WAIT` | `5s` | Таймаут graceful shutdown |
-| `MAX_CPU` | `0` | GOMAXPROCS (0 = авто) |
+| `DATABASE_URL` | `postgres://postgres:postgres@db:5432/clicks?sslmode=disable` | PostgreSQL connection |
+| `FLUSH_EVERY` | `1s` | Interval to flush data to DB |
+| `SHARDS` | `64` | Number of in-memory shards |
+| `READ_MAX_RANGE_DAYS` | `90` | Max range for `/stats` |
+| `SHUTDOWN_WAIT` | `5s` | Graceful shutdown timeout |
+| `MAX_CPU` | `0` | GOMAXPROCS (0 = auto) |
 
 ---
 
-## 3. Запуск через Docker Compose
+## 3. Run with Docker Compose
 
 ```bash
 docker compose -f dev/docker-compose.yml up -d --build
 ````
 
-Проверить состояние контейнеров:
+Check container status:
 
 ```bash
 docker ps | grep clicks-
 ```
 
-Проверить, что API живо:
+Health check:
 
 ```bash
 curl -i http://localhost:3000/healthz
 # → HTTP/1.1 204 No Content
 ```
 
-Остановить сервисы:
+Stop services:
 
 ```bash
 docker compose -f dev/docker-compose.yml down -v
@@ -52,7 +52,7 @@ docker compose -f dev/docker-compose.yml down -v
 
 ---
 
-## 4. Альтернатива: локальный запуск
+## 4. Local run (alternative)
 
 ```bash
 docker compose -f dev/docker-compose.yml up -d db
@@ -64,16 +64,16 @@ go run ./cmd/clicks-api
 
 ---
 
-## 5. Проверка API
+## 5. API test
 
-**1. Сделать клики**
+**1. Clicks**
 
 ```bash
 curl -i http://localhost:3000/counter/1
 curl -i http://localhost:3000/counter/1
 ```
 
-**2. Получить статистику**
+**2. Get stats**
 
 ```bash
 FROM=$(date -u -v-1M +"%Y-%m-%dT%H:%M:00Z")
@@ -85,7 +85,7 @@ curl -s -X POST http://localhost:3000/stats/1 \
   -d "{\"from\":\"$FROM\",\"to\":\"$TO\"}" | jq
 ```
 
-Ожидаемый ответ:
+Expected output:
 
 ```json
 {
@@ -97,22 +97,22 @@ curl -s -X POST http://localhost:3000/stats/1 \
 
 ---
 
-## 6. Нагрузочный тест (опционально)
+## 6. Load testing (optional)
 
-Установить [hey](https://github.com/rakyll/hey):
+Install [hey](https://github.com/rakyll/hey):
 
 ```bash
 brew install hey
 ```
 
-Прогнать:
+Run:
 
 ```bash
-# около 1000 rps
+# about 1000 rps
 hey -z 10s -c 20 -q 50 http://localhost:3000/counter/1
 ```
 
-Проверить, что данные попали в статистику:
+Check data in stats:
 
 ```bash
 FROM=$(date -u -v-1M +"%Y-%m-%dT%H:%M:00Z")
@@ -124,62 +124,62 @@ curl -s -X POST http://localhost:3000/stats/1 \
 
 ---
 
-## 7. Команды Makefile
+## 7. Makefile commands
 
 ```bash
-make dev-up      # собрать и запустить (db + app)
-make dev-down    # остановить и удалить контейнеры
-make build       # собрать бинарь локально
-make tidy        # tidy зависимостей
+make dev-up      # build and start (db + app)
+make dev-down    # stop and remove containers
+make build       # build binary locally
+make tidy        # tidy dependencies
 ```
 
 ---
 
-## 8. Структура проекта
+## 8. Project structure
 
 ```
-cmd/clicks-api/main.go         # точка входа
-internal/app/...               # жизненный цикл приложения
-internal/adapter/transport/http# HTTP-сервер (chi)
-internal/adapter/store/postgres# PostgreSQL-хранилище
-internal/service/...           # агрегатор кликов
-internal/entity/...            # DTO-модели
-pkg/config, pkg/logger         # конфиг и zap-логгер
-dev/docker-compose.yml, .env   # dev-окружение
-migrations/001_init.sql        # схема таблицы
+cmd/clicks-api/main.go         # entry point
+internal/app/...               # app lifecycle
+internal/adapter/transport/http# HTTP server (chi)
+internal/adapter/store/postgres# PostgreSQL store
+internal/service/...           # click aggregator
+internal/entity/...            # DTO models
+pkg/config, pkg/logger         # config and zap logger
+dev/docker-compose.yml, .env   # dev environment
+migrations/001_init.sql        # DB schema
 ```
 
 ---
 
-## 9. Частые проблемы
+## 9. Common issues
 
-| Ошибка                                       | Решение                                                                   |
-| -------------------------------------------- | ------------------------------------------------------------------------- |
-| `/app/clicks-api: no such file or directory` | Удалите строку `- ..:/app` из `dev/docker-compose.yml`.                   |
-| `port already in use`                        | Измените порты в `dev/docker-compose.yml`.                                |
-| `/stats` возвращает `null`                   | Просто нет данных в диапазоне → возьмите окно шире или предыдущую минуту. |
-| `/stats` пустой сразу после клика            | Подождите 1 секунду (`FLUSH_EVERY=1s`).                                   |
+| Error                                        | Solution                                                    |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| `/app/clicks-api: no such file or directory` | Remove `- ..:/app` from `dev/docker-compose.yml`.           |
+| `port already in use`                        | Change ports in `dev/docker-compose.yml`.                   |
+| `/stats` returns `null`                      | No data in range → widen the window or try previous minute. |
+| `/stats` empty right after click             | Wait 1s (`FLUSH_EVERY=1s`).                                 |
 
 ---
 
-## 10. Краткий тест-чеклист
+## 10. Quick test checklist
 
-1. Запустить сервисы
+1. Start services
 
    ```bash
    docker compose -f dev/docker-compose.yml up -d --build
    ```
-2. Проверить `/healthz`
+2. Check `/healthz`
 
    ```bash
    curl -i http://localhost:3000/healthz
    ```
-3. Кликнуть пару раз
+3. Click a few times
 
    ```bash
    curl -i http://localhost:3000/counter/1
    ```
-4. Получить статистику
+4. Get stats
 
    ```bash
    FROM=$(date -u -v-1M +"%Y-%m-%dT%H:%M:00Z")
@@ -188,8 +188,8 @@ migrations/001_init.sql        # схема таблицы
      -H 'Content-Type: application/json' \
      -d "{\"from\":\"$FROM\",\"to\":\"$TO\"}" | jq
    ```
-5. Убедиться, что ответ содержит значение `v > 0`.
+5. Verify response contains `v > 0`.
 
 ---
 
-Если всё выше работает — сервис полностью функционален и готов к демонстрации.
+## If all steps above work — the service is fully functional and ready for demo.
