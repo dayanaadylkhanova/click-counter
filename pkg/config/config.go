@@ -67,5 +67,5 @@ func joinErrs(errs []error) error {
 		}
 		msg += e.Error()
 	}
-	return fmt.Errorf(msg)
+	return fmt.Errorf("%s", msg)
 }
