@@ -193,3 +193,4 @@ migrations/001_init.sql        # DB schema
 ---
 
 ## If all steps above work — the service is fully functional and ready for demo.
+
