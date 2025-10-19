@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/example/click-counter/internal/entity"
-	"github.com/example/click-counter/internal/service"
+	"github.com/dayanaadylkhanova/click-counter/internal/entity"
+	"github.com/dayanaadylkhanova/click-counter/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"

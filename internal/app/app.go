@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/example/click-counter/internal/adapter/store/postgres"
-	http_server "github.com/example/click-counter/internal/adapter/transport/http"
-	"github.com/example/click-counter/internal/service"
-	"github.com/example/click-counter/pkg/config"
+	"github.com/dayanaadylkhanova/click-counter/internal/adapter/store/postgres"
+	http_server "github.com/dayanaadylkhanova/click-counter/internal/adapter/transport/http"
+	"github.com/dayanaadylkhanova/click-counter/internal/service"
+	"github.com/dayanaadylkhanova/click-counter/pkg/config"
 	"go.uber.org/zap"
 )
 

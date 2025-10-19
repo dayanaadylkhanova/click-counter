@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/example/click-counter/internal/entity"
-	"github.com/example/click-counter/internal/service"
+	"github.com/dayanaadylkhanova/click-counter/internal/entity"
+	"github.com/dayanaadylkhanova/click-counter/internal/service"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )

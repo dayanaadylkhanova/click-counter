@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/example/click-counter/internal/entity"
+	"github.com/dayanaadylkhanova/click-counter/internal/entity"
 )
 
 type AggregatorPort interface {

@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/example/click-counter/internal/app"
-	"github.com/example/click-counter/pkg/config"
-	"github.com/example/click-counter/pkg/logger"
+	"github.com/dayanaadylkhanova/click-counter/internal/app"
+	"github.com/dayanaadylkhanova/click-counter/pkg/config"
+	"github.com/dayanaadylkhanova/click-counter/pkg/logger"
 	"go.uber.org/zap"
 )
 

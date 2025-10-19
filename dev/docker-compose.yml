@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   db:
     image: postgres:16-alpine
@@ -27,8 +26,6 @@ services:
     ports:
       - "3000:3000"
     command: ["/app/clicks-api"]
-    volumes:
-      - ..:/app
 
 volumes:
   pgdata:
