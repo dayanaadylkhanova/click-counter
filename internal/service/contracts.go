@@ -6,6 +6,7 @@ import (
 
 	"github.com/dayanaadylkhanova/click-counter/internal/entity"
 )
+//go:generate mockgen -source=contracts.go -destination=./contracts_mock.go -package=service
 
 type AggregatorPort interface {
 	Inc(bannerID int64, now time.Time)
